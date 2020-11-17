@@ -1,0 +1,4 @@
+- pipeline.id: beat
+  path.config: "/usr/share/logstash/pipeline/beat.conf"
+- pipeline.id: tcp
+  path.config: "/usr/share/logstash/pipeline/tcp.conf"

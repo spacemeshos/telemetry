@@ -1,0 +1,84 @@
+version: '2.4'
+services:
+  elastic:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    container_name: elastic
+    hostname: elastic
+    environment:
+      node.name: "elastic-0"
+      cluster.initial_master_nodes: "elastic-0"
+      discovery.seed_hosts: "elastic-0"
+      cluster.name: "elastic"
+      network.host: "0.0.0.0"
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      node.data: "true"
+      node.ingest: "true"
+      node.master: "true"
+      rest.action.multi.allow_explicit_index: "true"
+    networks:
+      default:
+        aliases:
+          - elastic
+          - elastic-0
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.2
+    container_name: kibana
+    hostname: kibana
+    depends_on:
+      - elastic
+    environment:
+      ELASTICSEARCH_HOSTS: "http://elastic:9200"
+      SERVER_HOST: "0.0.0.0"
+      NODE_OPTIONS: "--max-old-space-size=1800"
+    volumes:
+      - ./kibana.ndjson:/usr/share/kibana/config/kibana.ndjson:Z
+    ports:
+      - 127.0.0.1:5601:5601
+    networks:
+      default:
+        aliases:
+          - kibana
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash-oss:7.9.2
+    container_name: logstash
+    hostname: logstash
+    depends_on:
+      - elastic
+    environment:
+      LS_JAVA_OPTS: "-Xmx128m -Xms128m"
+    volumes:
+      - ./logstash-tcp.conf:/usr/share/logstash/pipeline/tcp.conf:ro
+      - ./logstash-beat.conf:/usr/share/logstash/pipeline/beat.conf:ro
+      - ./pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./pipelines.yml:/etc/logstash/pipelines.yml:ro
+      - ./jvm.options:/usr/share/logstash/config/jvm.options:ro
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./log4j2.properties:/usr/share/logstash/config/log4j2.properties:ro
+    ports:
+      - 127.0.0.1:9899:9899
+      - 127.0.0.1:9898:9898
+    networks:
+      default:
+        aliases:
+          - logstash
+
+#  filebeat:
+#    image: docker.elastic.co/beats/filebeat:7.9.2
+#    container_name: filebeat
+#    hostname: filebeat
+#    depends_on:
+#      - elastic
+#      - logstash
+#    user: root
+#    volumes:
+#      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - ./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+#    ports:
+#      - 127.0.0.1:9896:9896
+#    networks:
+#      default:
+#        aliases:
+#          - filebeat

@@ -1,0 +1,5 @@
+{"type":"index-pattern","id":"sm","attributes":{"title":"f*","timeFieldName":"@timestamp"}}
+{"type":"config","attributes":{"defaultIndex":"f*"}}
+{"type":"query","id":"release tick","attributes":{"title":"release tick","query":{"language":"kuery","query":"M:\"release tick\""}}}
+{"type":"query","id":"starting spacemesh","attributes":{"title":"starting spacemesh","query":{"language":"kuery","query":"M:\"Starting spacemesh\""}}}
+
