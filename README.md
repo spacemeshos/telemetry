@@ -65,7 +65,7 @@ type Threshold struct { Binds }
 type ThresholdValue struct { count, threshold int }
 
 func (t Threshold) Update(value int) {
-    t.Update(func(s Slice, id FieldID) {
+    t.Binds.Update(func(s Slice, id FieldID) {
         if v, ok := s.Get(id); ok {
             th := v.(*ThresholdValue)
             if th.threshold > value {
