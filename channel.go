@@ -33,6 +33,10 @@ func New(name string, proto ProtocolFactory) *ChannelObject {
 	return Channel{name, "", proto, nil}.New()
 }
 
+func NewOrigin(name string, origin string, proto ProtocolFactory) *ChannelObject {
+	return Channel{name, origin, proto, nil}.New()
+}
+
 func ForEvery(f func(c *ChannelObject), channels ...*ChannelObject) {
 	if len(channels) > 0 {
 		wg := sync.WaitGroup{}
@@ -210,21 +214,24 @@ func (s *sliceObject) Add(id FieldID, v interface{}) {
 	return
 }
 
-type Binds []struct {
+type Binding struct {
 	FieldID
 	*ChannelObject
 }
 
+type Binds []Binding
+
 func BindsFor(what func(id FieldID, channel *ChannelObject), name string, channels ...*ChannelObject) Binds {
-	b := make(Binds, len(channels))
-	for i, c := range channels {
-		id, ok := c.Bind(name)
-		if !ok {
-			panic(fmt.Errorf("telemetry Binds %v is not unique", name))
+	b := make(Binds, 0, len(channels))
+	for _, c := range channels {
+		if c != nil {
+			id, ok := c.Bind(name)
+			if !ok {
+				panic(fmt.Errorf("telemetry Binds %v is not unique", name))
+			}
+			what(id, c)
+			b = append(b, Binding{id, c})
 		}
-		what(id, c)
-		b[i].FieldID = id
-		b[i].ChannelObject = c
 	}
 	return b
 }

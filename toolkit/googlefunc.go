@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func endpoint()string {
+func endpoint() string {
 	ep, ok := os.LookupEnv("TELEMETRY_ENDPOINT")
 	if !ok {
 		ep = "localhost:9898"
@@ -25,10 +25,10 @@ func timeout() time.Duration {
 	if err != nil {
 		i = 3
 	}
-	return time.Duration(i)*time.Second
+	return time.Duration(i) * time.Second
 }
 
-func verbose() func(string,...interface{}){
+func verbose() func(string, ...interface{}) {
 	v, ok := os.LookupEnv("TELEMETRY_VERBOSE")
 	if !ok || v == "" || v == "0" {
 		return nil
@@ -39,6 +39,6 @@ func verbose() func(string,...interface{}){
 func TelemetryFunction() func(w http.ResponseWriter, r *http.Request) {
 	return Reporter{
 		Protocol: Tcp{Endpoint: endpoint(), Timeout: timeout()}.New(),
-		Verbose: verbose(),
+		Verbose:  verbose(),
 	}.Report
 }

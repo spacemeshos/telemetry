@@ -85,9 +85,11 @@ func Test_TcpTelemetry(t *testing.T) {
 
 	s := StartTcpServer(t, to, endpoint)
 	c := telemetry.Channel{
-		to.Channel, "",
-		toolkit.Tcp{Endpoint: endpoint, Timeout: 3 * time.Second},
-		func(e error) { t.Error(e.Error()) }}.New()
+		Name:    to.Channel,
+		Origin:  "",
+		Proto:   toolkit.Auto{Endpoint: "tcp://" + endpoint, Timeout: 3 * time.Second},
+		OnError: func(e error) { t.Error(e.Error()) },
+	}.New()
 
 	telemetry.ConstantString("string", "constant", c)
 	n := telemetry.BindNumber("opt.number", nil, c)

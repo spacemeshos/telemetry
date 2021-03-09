@@ -120,7 +120,7 @@ func doPublicTelemetry(t *testing.T, compressed bool) {
 
 	c := telemetry.Channel{
 		to.Channel, "",
-		toolkit.Http{Endpoint: endpoint, Timeout: 3 * time.Second, Compressed: compressed},
+		toolkit.Auto{Endpoint: endpoint, Timeout: 3 * time.Second, Compressed: compressed},
 		func(e error) { t.Error(e.Error()) }}.New()
 
 	telemetry.ConstantString("string", "constant", c)

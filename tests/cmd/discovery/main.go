@@ -11,7 +11,8 @@ import (
 
 func main() {
 
-	c := telemetry.Channel{Name: "discovery", Origin: "generator", Proto: toolkit.Http{Endpoint: "http://localhost:9888/telemetry"}}.New()
+	//c := telemetry.Channel{Name: "discovery", Origin: "generator", Auto: toolkit.Http{Endpoint: "http://localhost:9888/telemetry"}}.New()
+	c := telemetry.Channel{Name: "discovery", Origin: "generator", Proto: toolkit.Http{Endpoint: "https://us-central1-spacecraft-id.cloudfunctions.net/telemetry2"}}.New()
 
 	toolkit.ConstantCpuInfo("cpu", c)
 	telemetry.ConstantString("sj.greeting", "hello!", c)

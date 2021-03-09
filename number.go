@@ -5,16 +5,21 @@ import (
 )
 
 type Number struct{ Binds }
-type FuncNum func()float64
+type FuncNum func() float64
 type DfltNum float64
 
-func (f FuncNum) Get() float64 { if f != nil { return f() }; return 0 }
+func (f FuncNum) Get() float64 {
+	if f != nil {
+		return f()
+	}
+	return 0
+}
 func (f DfltNum) Get() float64 { return float64(f) }
 
 func BindNumber(name string, initializer FuncNum, channels ...*ChannelObject) Number {
 	return Number{BindsFor(func(id FieldID, channel *ChannelObject) {
 		channel.OnSliceBegin(func(slice Slice) {
-			slice.Add(id, &NumberValue{initializer.Get() } )
+			slice.Add(id, &NumberValue{initializer.Get()})
 		})
 	}, name, channels...)}
 }

@@ -5,16 +5,21 @@ import (
 )
 
 type String struct{ Binds }
-type FuncStr func()string
+type FuncStr func() string
 type DfltStr string
 
-func (f FuncStr) Get() string { if f != nil { return f() }; return "" }
+func (f FuncStr) Get() string {
+	if f != nil {
+		return f()
+	}
+	return ""
+}
 func (s DfltStr) Get() string { return string(s) }
 
 func BindString(name string, initializer FuncStr, channels ...*ChannelObject) String {
 	return String{BindsFor(func(id FieldID, channel *ChannelObject) {
 		channel.OnSliceBegin(func(slice Slice) {
-			slice.Add(id, &StringValue{initializer.Get() })
+			slice.Add(id, &StringValue{initializer.Get()})
 		})
 	}, name, channels...)}
 }
